@@ -15,6 +15,8 @@
     </div>
     <ul class="lots__list">
         <?php foreach ($announcements as $announcement): ?>
+        <?php $date_range = getDateRange($announcement['expiration_date']); ?>
+        <?php if (count($date_range)): ?>
             <li class="lots__item lot">
                 <div class="lot__image">
                     <img src="<?= $announcement['url']; ?>" width="350" height="260" alt="">
@@ -27,12 +29,11 @@
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost"><?= formatPrice($announcement['price']); ?></span>
                         </div>
-                        <div class="lot__timer timer">
-                            12:23
-                        </div>
+                        <div class="lot__timer timer<?= intval($date_range[0]) > 0 ? '' : ' timer--finishing'; ?>"><?= implode(':', $date_range); ?></div>
                     </div>
                 </div>
             </li>
+        <?php endif; ?>
         <?php endforeach; ?>
     </ul>
 </section>
