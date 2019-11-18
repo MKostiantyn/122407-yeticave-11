@@ -20,12 +20,8 @@ CREATE TABLE lots(
     price_default FLOAT NOT NULL,
     price_step FLOAT NOT NULL,
     author_id INT NOT NULL,
-    category_id INT NOT NULL
-);
-
-CREATE TABLE lot_winner(
-    lot_id INT NOT NULL,
-    user_id INT NOT NULL
+    category_id INT NOT NULL,
+    winner_id INT NOT NULL
 );
 
 CREATE TABLE bets(
