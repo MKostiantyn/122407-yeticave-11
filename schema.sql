@@ -15,15 +15,12 @@ CREATE TABLE lots(
     date_create TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_end DATETIME NOT NULL,
     name VARCHAR(128) NOT NULL,
-    description VARCHAR(256),
-    image_url VARCHAR(128),
+    description VARCHAR(256) NOT NULL,
+    image_url VARCHAR(128) NOT NULL,
     price_default FLOAT NOT NULL,
-    price_step FLOAT NOT NULL
-);
-
-CREATE TABLE lot_author(
-    lot_id INT NOT NULL,
-    user_id INT NOT NULL
+    price_step FLOAT NOT NULL,
+    author_id INT NOT NULL,
+    category_id INT NOT NULL
 );
 
 CREATE TABLE lot_winner(
@@ -31,24 +28,11 @@ CREATE TABLE lot_winner(
     user_id INT NOT NULL
 );
 
-CREATE TABLE lot_category(
-    lot_id INT NOT NULL,
-    category_id INT NOT NULL
-);
-
 CREATE TABLE bets(
     id INT AUTO_INCREMENT PRIMARY KEY,
     date_bet TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total FLOAT NOT NULL
-);
-
-CREATE TABLE bet_user(
-    bet_id INT NOT NULL,
-    user_id INT NOT NULL
-);
-
-CREATE TABLE bet_lot(
-    bet_id INT NOT NULL,
+    total FLOAT NOT NULL,
+    author_id INT NOT NULL,
     lot_id INT NOT NULL
 );
 
@@ -61,11 +45,6 @@ CREATE TABLE users(
     contacts VARCHAR(128) NOT NULL
 );
 
-CREATE UNIQUE INDEX namex ON categories(name);
-CREATE UNIQUE INDEX codex ON categories(code);
-CREATE UNIQUE INDEX emailx ON users(email);
-
-ALTER TABLE users ADD INDEX id(id);
-ALTER TABLE bets ADD INDEX id(id);
-ALTER TABLE lots ADD INDEX id(id);
-ALTER TABLE categories ADD INDEX id(id);
+CREATE UNIQUE INDEX name_index ON categories(code);
+CREATE UNIQUE INDEX code_index ON categories(code);
+CREATE UNIQUE INDEX email_index ON users(email);
