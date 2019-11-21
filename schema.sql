@@ -21,7 +21,7 @@ CREATE TABLE lots(
     price_step FLOAT NOT NULL,
     author_id INT NOT NULL,
     category_id INT NOT NULL,
-    winner_id INT NOT NULL
+    winner_id INT
 );
 
 CREATE TABLE bets(
