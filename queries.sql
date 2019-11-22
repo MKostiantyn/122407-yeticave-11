@@ -130,16 +130,12 @@ VALUES
 SELECT * FROM categories;
 
 -- GET ALL NEW LOTS
-SELECT l.name, price_default, image_url, total, cat.name
+SELECT l.name AS lot_name, price_default, image_url, MAX(total) AS price_total, c.name AS category_name
 FROM lots l
-    JOIN categories cat
-        ON l.category_id = cat.id
-    JOIN (
-        SELECT MAX(total) total, b.lot_id
-        FROM bets b
-        GROUP BY b.lot_id
-    ) newtable ON newtable.lot_id = l.id
+JOIN categories c ON l.category_id = c.id
+JOIN bets b ON b.lot_id = l.id
 WHERE l.date_end > CURRENT_TIMESTAMP
+GROUP BY b.lot_id
 ORDER BY l.date_create DESC;
 
 -- GET LOT BY ID WITH CATEGORY NAME
