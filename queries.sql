@@ -114,6 +114,12 @@ VALUES
         (SELECT author_id FROM lots WHERE name = 'Маска Oakley Canopy')
     ),
     (
+        (SELECT l.id FROM lots l WHERE name = 'Маска Oakley Canopy'),
+        TIMESTAMP('2019-11-21'),
+        ((SELECT price_default FROM lots WHERE name = 'Маска Oakley Canopy') + (SELECT price_step FROM lots WHERE name = 'Маска Oakley Canopy') * 2),
+        (SELECT author_id FROM lots WHERE name = 'Маска Oakley Canopy')
+    ),
+    (
         (SELECT l.id FROM lots l WHERE name = 'DC Ply Mens 2016/2017 Snowboard'),
         TIMESTAMP('2019-11-13'),
         ((SELECT price_default FROM lots WHERE name = 'DC Ply Mens 2016/2017 Snowboard') + (SELECT price_step FROM lots WHERE name = 'DC Ply Mens 2016/2017 Snowboard')),
@@ -128,8 +134,11 @@ SELECT l.name, price_default, image_url, total, cat.name
 FROM lots l
     JOIN categories cat
         ON l.category_id = cat.id
-    JOIN bets b
-        ON b.lot_id = l.id
+    JOIN (
+        SELECT MAX(total) total, b.lot_id
+        FROM bets b
+        GROUP BY b.lot_id
+    ) newtable ON newtable.lot_id = l.id
 WHERE l.date_end > CURRENT_TIMESTAMP
 ORDER BY l.date_create DESC;
 
