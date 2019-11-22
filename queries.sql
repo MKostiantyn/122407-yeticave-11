@@ -1,12 +1,12 @@
 INSERT INTO categories
     (name, code)
 VALUES
-    ('Доски и лыжи', 'boards-skis'),
-    ('Крепления', 'bindings'),
+    ('Доски и лыжи', 'boards'),
+    ('Крепления', 'attachment'),
     ('Ботинки', 'boots'),
-    ('Одежда', 'clothes'),
-    ('Инструменты', 'equipment'),
-    ('Разное', 'sundry');
+    ('Одежда', 'clothing'),
+    ('Инструменты', 'tools'),
+    ('Разное', 'other');
 
 
 INSERT INTO users
@@ -40,7 +40,7 @@ VALUES
         10999,
         100,
         (SELECT id FROM users WHERE email='email@email.com'),
-        (SELECT id FROM categories WHERE code='boards-skis'),
+        (SELECT id FROM categories WHERE code='boards'),
         null
     ),
     (
@@ -52,7 +52,7 @@ VALUES
         159999,
         160,
         (SELECT id FROM users WHERE email='email@email.com'),
-        (SELECT id FROM categories WHERE code='boards-skis'),
+        (SELECT id FROM categories WHERE code='boards'),
         null
     ),
     (
@@ -64,7 +64,7 @@ VALUES
         800,
         10,
         (SELECT id FROM users WHERE email='test@test.com'),
-        (SELECT id FROM categories WHERE code='bindings'),
+        (SELECT id FROM categories WHERE code='attachment'),
         null
     ),
     (
@@ -88,7 +88,7 @@ VALUES
         7500,
         75,
         (SELECT id FROM users WHERE email='user@user.com'),
-        (SELECT id FROM categories WHERE code='clothes'),
+        (SELECT id FROM categories WHERE code='clothing'),
         null
     ),
     (
@@ -100,7 +100,7 @@ VALUES
         5400,
         55,
         (SELECT id FROM users WHERE email='user@user.com'),
-        (SELECT id FROM categories WHERE code='sundry'),
+        (SELECT id FROM categories WHERE code='other'),
         null
     );
 
