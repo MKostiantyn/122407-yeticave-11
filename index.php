@@ -2,61 +2,33 @@
 require_once('helpers.php');
 $is_auth = rand(0, 1);
 date_default_timezone_set('Europe/Kiev');
+$connection = mysqli_connect('localhost', 'root', 'root', 'yeticave');
+if ($connection == false) {
+    print('Connection error: ' . mysqli_connect_error());
+} else {
+    print('Connected!');
+    mysqli_set_charset($connection, 'utf8');
+
+    $get_new_lots_sql = 'SELECT * FROM lots WHERE date_end > CURRENT_TIMESTAMP ORDER BY date_create DESC';
+    $get_new_lots_result = mysqli_query($connection, $get_new_lots_sql);
+    $get_new_lots_result_rows = null;
+    if ($get_new_lots_result) {
+        $get_new_lots_result_rows = mysqli_fetch_all($get_new_lots_result, MYSQLI_ASSOC);
+    } else {
+        print('Error in SQL - "' . $get_new_lots_sql . '". Error info: ' . mysqli_error($connection));
+    }
+
+    $get_categories_sql = 'SELECT * FROM categories';
+    $get_categories_result = mysqli_query($connection, $get_categories_sql);
+    $get_categories_result_rows = null;
+    if ($get_categories_result) {
+        $get_categories_result_rows = mysqli_fetch_all($get_categories_result, MYSQLI_ASSOC);
+    } else {
+        print('Error in SQL - "' . $get_categories_sql . '". Error info: ' . mysqli_error($connection));
+    }
+}
 
 $user_name = 'Kostiantyn';
-$categories = [
-    'Доски и лыжи',
-    'Крепления',
-    'Ботинки',
-    'Одежда',
-    'Инструменты',
-    'Разное'
-];
-$announcements = [
-    [
-        'title' => '2014 Rossignol District Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => 10999,
-        'url' => 'img/lot-1.jpg',
-        'expiration_date' => '2019-12-10'
-    ],
-    [
-        'title' => 'DC Ply Mens 2016/2017 Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => 159999,
-        'url' => 'img/lot-2.jpg',
-        'expiration_date' => '2020-01-04'
-    ],
-    [
-        'title' => 'Крепления Union Contact Pro 2015 года размер L/XL',
-        'category' => 'Крепления',
-        'price' => 8000,
-        'url' => 'img/lot-3.jpg',
-        'expiration_date' => '2020-02-01'
-    ],
-    [
-        'title' => 'Ботинки для сноуборда DC Mutiny Charocal',
-        'category' => 'Ботинки',
-        'price' => 10999,
-        'url' => 'img/lot-4.jpg',
-        'expiration_date' => '2019-12-28'
-    ],
-    [
-        'title' => 'Куртка для сноуборда DC Mutiny Charocal',
-        'category' => 'Одежда',
-        'price' => 7500,
-        'url' => 'img/lot-5.jpg',
-        'expiration_date' => '2019-12-13'
-    ],
-    [
-        'title' => 'Маска Oakley Canopy',
-        'category' => 'Разное',
-        'price' => 5400,
-        'url' => 'img/lot-6.jpg',
-        'expiration_date' => '2020-01-03'
-    ]
-];
-
 function formatPrice(int $price) : string {
     $priceRounded = ceil($price);
     $priceFormatted = $priceRounded < 1000 ? $priceRounded : number_format ($priceRounded , 0 , '.' , ' ');
@@ -83,15 +55,15 @@ function getDateRange(string $date_string) : array {
 }
 
 $main_page_content = include_template('main.php', [
-    'categories' => $categories,
-    'announcements' => $announcements
+    'categories' => $get_categories_result_rows,
+    'announcements' => $get_new_lots_result_rows
 ]);
 $layout_page = include_template('layout.php', [
     'title' => 'Yeticave',
     'content' => $main_page_content,
     'is_auth' => $is_auth,
     'user_name' => $user_name,
-    'categories' => $categories
+    'categories' => $get_categories_result_rows
 ]);
 
 print($layout_page);

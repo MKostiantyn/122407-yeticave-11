@@ -13,7 +13,7 @@ INSERT INTO users
     (date_registration, email, name, password, contacts)
 VALUES
     (CURRENT_TIMESTAMP, 'email@email.com', 'Leon', 'qwerty', 'Michaelerkuppel, 1010 Vienna, Austria'),
-    (TIMESTAMP('2019-10-12'), 'test@test.com', 'Adam', 'abc123', 'Nieuwezijds Voorburgwal 147, 1012 RJ Amsterdam, Netherlands'),
+    (DATE('2019-10-12'), 'test@test.com', 'Adam', 'abc123', 'Nieuwezijds Voorburgwal 147, 1012 RJ Amsterdam, Netherlands'),
     (CURRENT_TIMESTAMP, 'user@user.com', 'Alicia', '12345678', 'Piazza del Colosseo, 1, 00184 Roma RM, Italy');
 
 
@@ -133,9 +133,9 @@ SELECT * FROM categories;
 SELECT l.name AS lot_name, price_default, image_url, MAX(total) AS price_total, c.name AS category_name
 FROM lots l
 JOIN categories c ON l.category_id = c.id
-JOIN bets b ON b.lot_id = l.id
+LEFT JOIN bets b ON b.lot_id = l.id
 WHERE l.date_end > CURRENT_TIMESTAMP
-GROUP BY b.lot_id
+GROUP BY l.id
 ORDER BY l.date_create DESC;
 
 -- GET LOT BY ID WITH CATEGORY NAME
@@ -147,7 +147,7 @@ WHERE l.id = 1;
 
 -- UPDATE LOT NAME
 UPDATE lots
-SET name = 'New Name :)'
+SET name = 'NEW 2014 Rossignol District Snowboard :)'
 WHERE id = 1;
 
 -- GET ALL BETS BY LOT ID ORDER BY DATA

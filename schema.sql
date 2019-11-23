@@ -13,7 +13,7 @@ CREATE TABLE categories(
 CREATE TABLE lots(
     id INT AUTO_INCREMENT PRIMARY KEY,
     date_create TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_end DATETIME NOT NULL,
+    date_end DATE NOT NULL,
     name VARCHAR(128) NOT NULL,
     description VARCHAR(256) NOT NULL,
     image_url VARCHAR(128) NOT NULL,
