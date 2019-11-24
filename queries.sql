@@ -1,12 +1,12 @@
 INSERT INTO categories
     (name, code)
 VALUES
-    ('Доски и лыжи', 'boards'),
-    ('Крепления', 'attachment'),
-    ('Ботинки', 'boots'),
-    ('Одежда', 'clothing'),
-    ('Инструменты', 'tools'),
-    ('Разное', 'other');
+    (N'Доски и лыжи', 'boards'),
+    (N'Крепления', 'attachment'),
+    (N'Ботинки', 'boots'),
+    (N'Одежда', 'clothing'),
+    (N'Инструменты', 'tools'),
+    (N'Разное', 'other');
 
 
 INSERT INTO users
@@ -34,8 +34,8 @@ VALUES
     (
         CURRENT_TIMESTAMP,
         TIMESTAMP('2019-12-10'),
-        '2014 Rossignol District Snowboard',
-        'Snowboards widths are between 6 and 12 inches or 15 to 30 centimeters. Snowboards are differentiated from monoskis by the stance of the user.',
+        N'2014 Rossignol District Snowboard',
+        N'Snowboards widths are between 6 and 12 inches or 15 to 30 centimeters. Snowboards are differentiated from monoskis by the stance of the user.',
         'img/lot-1.jpg',
         10999,
         100,
@@ -46,8 +46,8 @@ VALUES
     (
         TIMESTAMP('2019-11-01'),
         TIMESTAMP('2020-01-04'),
-        'DC Ply Mens 2016/2017 Snowboard',
-        'Snowboards are boards where both feet are secured to the same board, which are wider than skis, with the ability to glide on snow.',
+        N'DC Ply Mens 2016/2017 Snowboard',
+        N'Snowboards are boards where both feet are secured to the same board, which are wider than skis, with the ability to glide on snow.',
         'img/lot-2.jpg',
         159999,
         160,
@@ -58,8 +58,8 @@ VALUES
     (
         TIMESTAMP('2019-11-13'),
         TIMESTAMP('2020-02-01'),
-        'Крепления Union Contact Pro 2015 года размер L/XL',
-        'Designed by Union Pro Rider Gigi Rüf, the Contact Pro is one of the most sought after bindings in the Union line.',
+        N'Крепления Union Contact Pro 2015 года размер L/XL',
+        N'Designed by Union Pro Rider Gigi Rüf, the Contact Pro is one of the most sought after bindings in the Union line.',
         'img/lot-3.jpg',
         800,
         10,
@@ -70,8 +70,8 @@ VALUES
     (
         CURRENT_TIMESTAMP,
         TIMESTAMP('2019-12-28'),
-        'Ботинки для сноуборда DC Mutiny Charocal',
-        'DC Mutiny Snowboard Boot - Size 11.5 Color: Black, Brand New. Shipped with USPS Priority Mail.',
+        N'Ботинки для сноуборда DC Mutiny Charocal',
+        N'DC Mutiny Snowboard Boot - Size 11.5 Color: Black, Brand New. Shipped with USPS Priority Mail.',
         'img/lot-4.jpg',
         10999,
         110,
@@ -82,8 +82,8 @@ VALUES
     (
         CURRENT_TIMESTAMP,
         TIMESTAMP('2019-12-13'),
-        'Куртка для сноуборда DC Mutiny Charocal',
-        'Waterproof Guarantee To Keep You Dry.',
+        N'Куртка для сноуборда DC Mutiny Charocal',
+        N'Waterproof Guarantee To Keep You Dry.',
         'img/lot-5.jpg',
         7500,
         75,
@@ -94,8 +94,8 @@ VALUES
     (
         TIMESTAMP('2019-11-02'),
         TIMESTAMP('2020-01-03'),
-        'Маска Oakley Canopy',
-        'Canopy™ allows you to oversize your field of view, without compromising fit.',
+        N'Маска Oakley Canopy',
+        N'Canopy™ allows you to oversize your field of view, without compromising fit.',
         'img/lot-6.jpg',
         5400,
         55,
