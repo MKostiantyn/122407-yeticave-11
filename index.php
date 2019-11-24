@@ -1,34 +1,27 @@
 <?php
 require_once('helpers.php');
-$is_auth = rand(0, 1);
 date_default_timezone_set('Europe/Kiev');
 $connection = mysqli_connect('localhost', 'root', 'root', 'yeticave');
-if ($connection == false) {
-    print('Connection error: ' . mysqli_connect_error());
-} else {
-    print('Connected!');
-    mysqli_set_charset($connection, 'utf8');
-
-    $get_new_lots_sql = 'SELECT * FROM lots WHERE date_end > CURRENT_TIMESTAMP ORDER BY date_create DESC';
-    $get_new_lots_result = mysqli_query($connection, $get_new_lots_sql);
-    $get_new_lots_result_rows = null;
-    if ($get_new_lots_result) {
-        $get_new_lots_result_rows = mysqli_fetch_all($get_new_lots_result, MYSQLI_ASSOC);
-    } else {
-        print('Error in SQL - "' . $get_new_lots_sql . '". Error info: ' . mysqli_error($connection));
-    }
-
-    $get_categories_sql = 'SELECT * FROM categories';
-    $get_categories_result = mysqli_query($connection, $get_categories_sql);
-    $get_categories_result_rows = null;
-    if ($get_categories_result) {
-        $get_categories_result_rows = mysqli_fetch_all($get_categories_result, MYSQLI_ASSOC);
-    } else {
-        print('Error in SQL - "' . $get_categories_sql . '". Error info: ' . mysqli_error($connection));
-    }
+if (!$connection) {
+    throw new Exception(mysqli_connect_error());
 }
-
+mysqli_set_charset($connection, 'utf8');
+$is_auth = rand(0, 1);
 $user_name = 'Kostiantyn';
+$get_new_lots_sql = 'SELECT * FROM lots WHERE date_end > CURRENT_TIMESTAMP ORDER BY date_create DESC';
+$get_new_lots_result = mysqli_query($connection, $get_new_lots_sql);
+if (!$get_new_lots_result) {
+    throw new Exception(mysqli_error($connection));
+}
+$get_new_lots_result_rows = mysqli_fetch_all($get_new_lots_result, MYSQLI_ASSOC);
+
+$get_categories_sql = 'SELECT * FROM categories';
+$get_categories_result = mysqli_query($connection, $get_categories_sql);
+if (!$get_categories_result) {
+    throw new Exception(mysqli_error($connection));
+}
+$get_categories_result_rows = mysqli_fetch_all($get_categories_result, MYSQLI_ASSOC);
+
 function formatPrice(int $price) : string {
     $priceRounded = ceil($price);
     $priceFormatted = $priceRounded < 1000 ? $priceRounded : number_format ($priceRounded , 0 , '.' , ' ');
