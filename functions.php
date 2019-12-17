@@ -1,47 +1,25 @@
 <?php
 require_once('helpers.php');
-function dataBaseConnection(): mysqli {
-    $connection = mysqli_connect('localhost', 'root', 'root', 'yeticave');
-    if (!$connection) {
-        throw new Exception(mysqli_connect_error());
-    }
-    mysqli_set_charset($connection, "utf8");
-    return $connection;
+function getDataBaseConnection() {
+    return mysqli_connect('localhost', 'root', 'root', 'yeticave');
 }
-function runSql(string $query) {
-    $connection = dataBaseConnection();
-    $result = mysqli_query($connection, $query);
+function runQuery(mysqli $link, string $sql, $params = array()) {
+    if (!empty($params)) {
+        $stmt = db_get_prepare_stmt($link, $sql, $params);
+        $result = mysqli_stmt_execute($stmt);
+    } else {
+        $result = mysqli_query($link, $sql);
+    }
     if (!$result) {
-        throw new Exception(mysqli_error($result));
+        errorQueryHandler($link);
+        die();
     }
     return $result;
 }
-function getLots() {
-    $query = 'SELECT l.id AS lot_id, l.name AS lot_name, l.date_end AS date_end, price_default, image_url, c.name AS category_name
-FROM lots l JOIN categories c ON l.category_id = c.id WHERE l.date_end > CURRENT_TIMESTAMP ORDER BY l.date_create DESC';
-    $result = runSql($query);
-    return mysqli_fetch_all($result, MYSQLI_ASSOC);
-}
-function getLotById(string $id) {
-    $query = 'SELECT l.name AS name, image_url, description, date_end, price_default, price_step, c.name AS category_name
-FROM lots l
-JOIN categories c ON l.category_id = c.id
-WHERE l.id = ' . $id;
-    $result = runSql($query);
-    return mysqli_fetch_assoc($result);
-}
-function getBetsById(string $id) {
-    $query = 'SELECT date_bet, total, name 
-FROM bets b
-JOIN users u ON author_id = u.id
-WHERE b.lot_id =' . $id;
-    $result = runSql($query);
-    return mysqli_fetch_all($result, MYSQLI_ASSOC);
-}
-function getCategories() {
-    $query = 'SELECT * FROM categories';
-    $result = runSql($query);
-    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+function errorQueryHandler($link) {
+    $error = mysqli_error($link);
+    $error_content = include_template('error.php', ['error' => $error]);
+    print($error_content);
 }
 function formatPrice(int $price) : string {
     $priceRounded = ceil($price);
@@ -70,12 +48,66 @@ function getDateRange(string $date_string) : array {
 function escapeString(string $str) : string {
     return htmlspecialchars($str);
 }
-function getLayout(string $title, string $content, int $auth_status, string $user_name) : string {
+function getLayout(string $title, string $content, int $auth_status, string $user_name, array $categories = [], bool $is_main_page = false, array $css = []) : string {
     return include_template('layout.php', [
         'title' => $title,
         'content' => $content,
         'is_auth' => $auth_status,
         'user_name' => $user_name,
-        'categories' => getCategories()
+        'categories' => $categories,
+        'is_main_page' => $is_main_page,
+        'css' => $css
     ]);
+}
+function getPostValue(string $name) : string {
+    return $_POST[$name] ?? '';
+}
+function validatePostData(array $fields, array $category_ids) : array {
+    $errors = [];
+    foreach ($_POST as $key => $value) {
+        if (isset($fields[$key])) {
+            foreach($fields[$key] as $rule) {
+                if (!$rule['validate']($_POST[$key])) {
+                    $errors[$key] = $rule['message'];
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!isset($errors['category']) && !in_array($_POST['category'], $category_ids)) {
+        $errors['category'] = 'Choose available category!';
+    }
+
+    return $errors;
+}
+function validateFile(string $name) : string {
+    switch ($_FILES[$name]['error']) {
+        case UPLOAD_ERR_OK:
+            break;
+        case UPLOAD_ERR_NO_FILE:
+            return 'File not uploaded!';
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+            return 'Exceeded file size limit!';
+        default:
+            return 'Unknown errors!';
+    }
+
+    $file_type = mime_content_type($_FILES[$name]['tmp_name']);
+    $available_types = ['image/jpeg', 'image/png'];
+
+    if (!in_array($file_type, $available_types)) {
+        return 'Invalid file format! Available formats - jpg, jpeg, png.';
+    }
+
+    return '';
+}
+function saveFile(string $name) {
+    $tmp_name = $_FILES[$name]['tmp_name'];
+    $path = $_FILES[$name]['name'];
+    $extension = pathinfo($path, PATHINFO_EXTENSION);
+    $filename = 'uploads/' . uniqid() . '.' . $extension;
+    move_uploaded_file($tmp_name, $filename);
+    return $filename;
 }

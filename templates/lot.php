@@ -1,12 +1,3 @@
-<nav class="nav">
-    <ul class="nav__list container">
-        <?php foreach ($categories as $category): ?>
-        <li class="nav__item">
-            <a href="all-lots.html"><?= escapeString($category['name']); ?></a>
-        </li>
-        <?php endforeach; ?>
-    </ul>
-</nav>
 <section class="lot-item container">
     <h2><?= escapeString($lot['name']); ?></h2>
     <div class="lot-item__content">
@@ -51,7 +42,7 @@
                         </tr>
                     <?php endforeach; ?>
                 </table>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
-    </div>
 </section>
