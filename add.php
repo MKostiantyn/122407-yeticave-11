@@ -11,8 +11,16 @@ $add_page_title = 'YetiCave - Добавление лота';
 $add_page_css = ['../css/flatpickr.min.css'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $file_field_name = 'lot-img';
-    $form_fields = [
+    $form_fields = filter_input_array(INPUT_POST,
+        [
+            'lot-date' => FILTER_DEFAULT,
+            'lot-name' => FILTER_DEFAULT,
+            'message' => FILTER_DEFAULT,
+            'category' => FILTER_DEFAULT,
+            'lot-rate' => FILTER_DEFAULT,
+            'lot-step' => FILTER_DEFAULT
+        ], true);
+    $fields_validation_rules = [
         'lot-name' => [
             $validation_rules['required']
         ],
@@ -39,11 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $validation_rules['date_greater_today']
         ]
     ];
-    $errors = validatePostData($form_fields, $category_ids);
-    $error_file = validateFile($file_field_name);
+    $errors = validatePostData($form_fields, $fields_validation_rules);
+    $error_category_id = validateCategoryId($form_fields['category'], $category_ids);
+    $error_file = validateFile('lot-img');
 
+    if ($error_category_id) {
+        $errors['category'] = $error_category_id;
+    }
     if ($error_file) {
-        $errors[$file_field_name] = $error_file;
+        $errors['lot-img'] = $error_file;
     }
     if (count($errors)) {
         $add_page_data_content = include_template('add.php', [
@@ -51,16 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'errors' => $errors
         ]);
     } else {
-        $lot_data = filter_input_array(INPUT_POST,
-            [
-                'lot-date' => FILTER_DEFAULT,
-                'lot-name' => FILTER_DEFAULT,
-                'message' => FILTER_DEFAULT,
-                'category' => FILTER_DEFAULT,
-                'lot-rate' => FILTER_DEFAULT,
-                'lot-step' => FILTER_DEFAULT
-            ], true);
-        $lot_data['lot-img'] = saveFile($file_field_name);
+        $form_fields['lot-img'] = saveFile('lot-img');
 
         $new_lot_query = <<<SQL
     INSERT INTO lots
@@ -78,14 +81,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
 SQL;
         $new_lot_result = runQuery($link, $new_lot_query, [
-            $lot_data['lot-date'],
-            $lot_data['lot-name'],
-            $lot_data['message'],
-            $lot_data['lot-img'],
-            $lot_data['lot-rate'],
-            $lot_data['lot-step'],
+            $form_fields['lot-date'],
+            mysqli_real_escape_string($link, $form_fields['lot-name']),
+            mysqli_real_escape_string($link, $form_fields['message']),
+            $form_fields['lot-img'],
+            $form_fields['lot-rate'],
+            $form_fields['lot-step'],
             1,
-            $lot_data['category']
+            $form_fields['category']
         ]);
 
         if ($new_lot_result) {

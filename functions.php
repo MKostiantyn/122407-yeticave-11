@@ -21,6 +21,16 @@ function errorQueryHandler($link) {
     $error_content = include_template('error.php', ['error' => $error]);
     print($error_content);
 }
+function checkIsEmailExist (mysqli $link, string $email ) : bool {
+    $email_query = <<<SQL
+    SELECT email
+    FROM users
+    WHERE email = "$email"
+SQL;
+    $result = runQuery($link, $email_query);
+    $num = mysqli_num_rows($result);
+    return $num > 0;
+}
 function formatPrice(int $price) : string {
     $priceRounded = ceil($price);
     $priceFormatted = $priceRounded < 1000 ? $priceRounded : number_format ($priceRounded , 0 , '.' , ' ');
@@ -62,11 +72,11 @@ function getLayout(string $title, string $content, int $auth_status, string $use
 function getPostValue(string $name) : string {
     return $_POST[$name] ?? '';
 }
-function validatePostData(array $fields, array $category_ids) : array {
+function validatePostData(array $fields, array $rules) : array {
     $errors = [];
-    foreach ($_POST as $key => $value) {
-        if (isset($fields[$key])) {
-            foreach($fields[$key] as $rule) {
+    foreach ($fields as $key => $value) {
+        if (isset($rules[$key])) {
+            foreach($rules[$key] as $rule) {
                 if (!$rule['validate']($_POST[$key])) {
                     $errors[$key] = $rule['message'];
                     break;
@@ -74,14 +84,16 @@ function validatePostData(array $fields, array $category_ids) : array {
             }
         }
     }
-
-    if (!isset($errors['category']) && !in_array($_POST['category'], $category_ids)) {
-        $errors['category'] = 'Choose available category!';
-    }
-
     return $errors;
 }
-function validateFile(string $name) : string {
+function validateCategoryId(string $id, array $category_ids) {
+    return $id && !in_array($id, $category_ids) ? 'Choose available category!' : null;
+}
+function validateFile(string $name) {
+    if (!isset($_FILES[$name])) {
+        return 'File not uploaded!';
+    }
+
     switch ($_FILES[$name]['error']) {
         case UPLOAD_ERR_OK:
             break;
@@ -101,7 +113,19 @@ function validateFile(string $name) : string {
         return 'Invalid file format! Available formats - jpg, jpeg, png.';
     }
 
-    return '';
+    return null;
+}
+function validateIsEmailExist(mysqli $link, string $email) {
+    $email_filtered = filter_var($email, FILTER_VALIDATE_EMAIL);
+    if (!$email_filtered) {
+        return 'Please enter valid Email address! Example - emailname@donmain.com';
+    }
+
+    if (checkIsEmailExist($link, $email_filtered)) {
+        return "Email address is already registered";
+    }
+
+    return null;
 }
 function saveFile(string $name) {
     $tmp_name = $_FILES[$name]['tmp_name'];

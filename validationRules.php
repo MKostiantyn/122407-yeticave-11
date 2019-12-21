@@ -41,5 +41,13 @@ $validation_rules = [
             return $days >= 1;
         },
         'message' => 'Date should be greater than the current minimum for one day!'
+    ],
+    'email' => [
+        'validate' => function(string $var) : bool {
+            $diff = strtotime($var) - strtotime('now');
+            $days = $diff / (60 * 60 * 24);
+            return $days >= 1;
+        },
+        'message' => 'Date should be greater than the current minimum for one day!'
     ]
 ];
