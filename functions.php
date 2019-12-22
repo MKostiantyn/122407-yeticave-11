@@ -21,7 +21,7 @@ function errorQueryHandler($link) {
     $error_content = include_template('error.php', ['error' => $error]);
     print($error_content);
 }
-function checkIsEmailExist (mysqli $link, string $email ) : bool {
+function checkIsEmailExist(mysqli $link, string $email) : bool {
     $email_query = <<<SQL
     SELECT email
     FROM users
@@ -58,7 +58,7 @@ function getDateRange(string $date_string) : array {
 function escapeString(string $str) : string {
     return htmlspecialchars($str);
 }
-function getLayout(string $title, string $content, int $auth_status, string $user_name, array $categories = [], bool $is_main_page = false, array $css = []) : string {
+function getLayout(string $title, string $content, bool $auth_status, string $user_name, array $categories = [], bool $is_main_page = false, array $css = []) : string {
     return include_template('layout.php', [
         'title' => $title,
         'content' => $content,
@@ -77,7 +77,7 @@ function validatePostData(array $fields, array $rules) : array {
     foreach ($fields as $key => $value) {
         if (isset($rules[$key])) {
             foreach($rules[$key] as $rule) {
-                if (!$rule['validate']($_POST[$key])) {
+                if (!$rule['validate']($fields[$key])) {
                     $errors[$key] = $rule['message'];
                     break;
                 }
@@ -126,6 +126,30 @@ function validateIsEmailExist(mysqli $link, string $email) {
     }
 
     return null;
+}
+
+function validateIsEmailCorrect(mysqli $link, string $email) {
+    $email_filtered = filter_var($email, FILTER_VALIDATE_EMAIL);
+    if (!$email_filtered) {
+        return 'Please enter valid Email address! Example - emailname@donmain.com';
+    }
+
+    if (!checkIsEmailExist($link, $email_filtered)) {
+        return "Email address is not registered";
+    }
+
+    return null;
+}
+
+function validateIsPasswordCorrect(mysqli $link, string $email, string $password) {
+    $email_query = <<<SQL
+    SELECT password
+    FROM users
+    WHERE email = "$email"
+SQL;
+    $result = runQuery($link, $email_query);
+    $result_fetched = mysqli_fetch_assoc($result);
+    return password_verify($password, $result_fetched['password']) ? null : 'You entered an incorrect password!';
 }
 function saveFile(string $name) {
     $tmp_name = $_FILES[$name]['tmp_name'];

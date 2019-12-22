@@ -1,10 +1,17 @@
 <?php
-require_once('data.php');
 require_once('helpers.php');
 require_once('functions.php');
 require_once('init.php');
+require_once('data.php');
 require_once('categories.php');
 require_once('validationRules.php');
+
+if(!$is_auth) {
+    http_response_code(403);
+    $lot_not_found = include_template('error.php', ['error' => 'The page is available only to authorized users!']);
+    print($lot_not_found);
+    exit();
+}
 
 $category_ids = array_column($categories, 'id');
 $add_page_title = 'YetiCave - Добавление лота';
@@ -87,13 +94,14 @@ SQL;
             $form_fields['lot-img'],
             $form_fields['lot-rate'],
             $form_fields['lot-step'],
-            1,
+            $_SESSION['user_id'],
             $form_fields['category']
         ]);
 
         if ($new_lot_result) {
             $lot_id = mysqli_insert_id($link);
             header("Location: lot.php?id=" . $lot_id);
+            exit();
         }
     }
 } else {
