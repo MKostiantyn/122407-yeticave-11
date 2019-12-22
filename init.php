@@ -8,4 +8,13 @@ if (!$link) {
     die;
 } else {
     mysqli_set_charset($link, "utf8");
+    $date_now = new DateTime();
+    $mins = $date_now->getOffset() / 60;
+    $sgn = ($mins < 0 ? -1 : 1);
+    $mins = abs($mins);
+    $hrs = floor($mins / 60);
+    $mins -= $hrs * 60;
+    $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
+    $query = "SET time_zone='".$offset."'";
+    runQuery($link, $query);
 }
