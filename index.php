@@ -4,6 +4,7 @@ require_once('functions.php');
 require_once('init.php');
 require_once('data.php');
 require_once('categories.php');
+require_once('getwinner.php');
 
 $lots_query = <<<SQL
     SELECT l.id AS id, l.name AS name, l.date_end AS date_end, price_default, image_url, c.name AS category_name
