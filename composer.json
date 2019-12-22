@@ -1,0 +1,12 @@
+{
+    "name": "global/yeticave",
+    "authors": [
+        {
+            "name": "Kostek",
+            "email": "mochulskyi.kostiantyn@gmail.com"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.2"
+    }
+}

@@ -15,12 +15,13 @@ if(!$is_auth) {
 
 $page_title = 'YetiCave - Мои ставки';
 $bets_query = <<<SQL
-SELECT date_bet, date_end, total, l.id as lot_id, l.name as lot_name, c.name as category_name, image_url
+SELECT date_bet, date_end, total, l.id as lot_id, l.name as lot_name, c.name as category_name, image_url, winner_id, contacts
 FROM bets b
 JOIN lots l ON lot_id = l.id
 JOIN categories c ON l.category_id = c.id
+LEFT JOIN users u ON winner_id = u.id
 WHERE b.author_id = ?
-ORDER BY date_end, date_bet ASC
+ORDER BY date_bet DESC
 SQL;
 $bets_result = runQuery($link, $bets_query, [$_SESSION['user_id']]);
 $bets = mysqli_fetch_all($bets_result, MYSQLI_ASSOC);
