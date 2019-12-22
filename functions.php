@@ -6,7 +6,8 @@ function getDataBaseConnection() {
 function runQuery(mysqli $link, string $sql, $params = array()) {
     if (!empty($params)) {
         $stmt = db_get_prepare_stmt($link, $sql, $params);
-        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
     } else {
         $result = mysqli_query($link, $sql);
     }
@@ -55,8 +56,8 @@ function getDateRange(string $date_string) : array {
     }
     return [];
 }
-function escapeString(string $str) : string {
-    return htmlspecialchars($str);
+function escapeString($str) : string {
+    return $str ? htmlspecialchars($str) : '';
 }
 function getLayout(string $title, string $content, bool $auth_status, string $user_name, array $categories = [], bool $is_main_page = false, array $css = []) : string {
     return include_template('layout.php', [
