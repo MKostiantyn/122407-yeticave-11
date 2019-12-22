@@ -11,8 +11,8 @@
         <div class="lot-item__right">
             <?php if ($is_auth): ?>
             <div class="lot-item__state">
-                <?php $date_range = getDateRange($lot['date_end']); ?>
-                <div class="lot-item__timer timer<?= intval($date_range[0]) > 0 ? '' : ' timer--finishing'; ?>"><?= implode(':', $date_range); ?></div>
+                <?php $date_difference = getDateDifference($lot['date_end']); ?>
+                <div class="lot-item__timer timer<?= $date_difference > 60 * 60 ? '' : ' timer--finishing'; ?>"><?= implode(':', formatTime($date_difference)); ?></div>
                 <div class="lot-item__cost-state">
                     <div class="lot-item__rate">
                         <span class="lot-item__amount">Текущая цена</span>
@@ -22,11 +22,11 @@
                         Мин. ставка <span><?= formatPrice($lot['price_step']); ?></span>
                     </div>
                 </div>
-                <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post" autocomplete="off">
-                    <p class="lot-item__form-item form__item">
+                <form class="lot-item__form" action="<?= '/lot.php?id=' . $_GET['id'] ?>" method="post" autocomplete="off">
+                    <p class="lot-item__form-item form__item<?= isset($errors['cost']) ? ' form__item--invalid' : ''; ?>">
                         <label for="cost">Ваша ставка</label>
-                        <input id="cost" type="text" name="cost" placeholder="12 000">
-                        <span class="form__error">Введите наименование лота</span>
+                        <input id="cost" type="number" name="cost" min="<?= $lot['price_step']; ?>" placeholder="12 000" required>
+                        <span class="form__error"><?= isset($errors['cost']) ? $errors['cost'] : ''; ?></span>
                     </p>
                     <button type="submit" class="button">Сделать ставку</button>
                 </form>

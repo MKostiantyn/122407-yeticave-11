@@ -1,4 +1,4 @@
-<?php $date_range = getDateRange($lot['date_end']); ?>
+<?php $date_difference = getDateDifference($lot['date_end']); ?>
 <div class="lot__image">
     <img src="<?= $lot['image_url'] ?>" width="350" height="260" alt="<?= escapeString($lot['name']); ?>">
 </div>
@@ -10,6 +10,6 @@
             <span class="lot__amount">Стартовая цена</span>
             <span class="lot__cost"><?= formatPrice($lot['price_default']); ?></span>
         </div>
-        <div class="lot__timer timer<?= intval($date_range[0]) > 0 ? '' : ' timer--finishing'; ?>"><?= implode(':', $date_range); ?></div>
+        <div class="lot__timer timer<?= $date_difference > 60 * 60 ? '' : ' timer--finishing'; ?>"><?= implode(':', formatTime($date_difference)); ?></div>
     </div>
 </div>

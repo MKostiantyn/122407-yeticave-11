@@ -6,11 +6,14 @@ function getDataBaseConnection() {
 function runQuery(mysqli $link, string $sql, $params = array()) {
     if (!empty($params)) {
         $stmt = db_get_prepare_stmt($link, $sql, $params);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-    } else {
-        $result = mysqli_query($link, $sql);
+        if (!mysqli_stmt_execute($stmt)) {
+            errorQueryHandler($link);
+            die();
+        }
+        return mysqli_stmt_get_result($stmt);
     }
+
+    $result = mysqli_query($link, $sql);
     if (!$result) {
         errorQueryHandler($link);
         die();
@@ -37,24 +40,53 @@ function formatPrice(int $price) : string {
     $priceFormatted = $priceRounded < 1000 ? $priceRounded : number_format ($priceRounded , 0 , '.' , ' ');
     return $priceFormatted . ' ₽';
 }
-function formatTime(int $time) : string {
+function formatTimeNumber(int $time) : string {
     return ($time > 9 ? '' : '0') . $time;
 }
-function getDateRange(string $date_string) : array {
+function getDateDifference(string $date_string) {
     if (is_date_valid($date_string)) {
-        $date_data = [
-            'seconds' => 60,
-            'minutes' => 60
-        ];
-        $now_timestamp = time();
-        $date_timestamp = strtotime($date_string);
-        $date_diff = $date_timestamp > $now_timestamp ? $date_timestamp - $now_timestamp : 0;
-        $secondsInHour = $date_data['minutes'] * $date_data['seconds'];
-        $hours = floor($date_diff / $secondsInHour);
-        $minutes = floor(($date_diff - $hours * $secondsInHour) / $date_data['seconds']);
-        return [formatTime($hours), formatTime($minutes)];
+        return strtotime($date_string) - time();
     }
-    return [];
+    return null;
+}
+function formatTime($seconds) : array {
+    $date_data = [
+        'seconds' => 60,
+        'minutes' => 60
+    ];
+    if ($seconds > 0) {
+        $secondsInHour = $date_data['minutes'] * $date_data['seconds'];
+        $hours = floor($seconds / $secondsInHour);
+        $minutes = floor(($seconds - $hours * $secondsInHour) / $date_data['seconds']);
+        $seconds = $seconds - $hours * $secondsInHour - $minutes * $date_data['minutes'];
+    } else {
+        $hours = 0;
+        $minutes = 0;
+        $seconds = 0;
+    }
+
+    return [formatTimeNumber($hours), formatTimeNumber($minutes), formatTimeNumber($seconds)];
+}
+function formatTimeToStringFormat(string $time_string) : string  {
+    $time = strtotime($time_string);
+    $now = strtotime('now');
+    $diff = $now - $time;
+    switch (true) {
+        case ($diff < 60):
+            return 'Только что';
+        case ($diff < 3600):
+            $minutes = floor($diff/60);
+            $minutesWord = get_noun_plural_form($minutes, 'минута', 'минуты', 'минут');
+            return $minutes . ' ' . $minutesWord . ' назад';
+        case ($diff < 24 * 3600):
+            $hours = floor($diff/3600);
+            $hoursWord = get_noun_plural_form($hours, 'час', 'часа', 'часов');
+            return $hours . ' ' . $hoursWord . ' назад';
+        case ($diff < 2 * 24 * 3600):
+            return 'Вчера, в ' . date("H.i", $time);
+        default:
+            return date("d.m.Y", $time) . ' в ' . date("H.i", $time);
+    }
 }
 function escapeString($str) : string {
     return $str ? htmlspecialchars($str) : '';
@@ -159,4 +191,7 @@ function saveFile(string $name) {
     $filename = 'uploads/' . uniqid() . '.' . $extension;
     move_uploaded_file($tmp_name, $filename);
     return $filename;
+}
+function validateIsMinBet($cost, $step) {
+    return intval($cost) >= intval($step) ? null : 'Bet should be greater then min bet(' . $step . ')';
 }
