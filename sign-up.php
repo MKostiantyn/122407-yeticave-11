@@ -1,10 +1,17 @@
 <?php
-require_once('data.php');
 require_once('helpers.php');
 require_once('functions.php');
 require_once('init.php');
+require_once('data.php');
 require_once('categories.php');
 require_once('validationRules.php');
+
+if($is_auth) {
+    http_response_code(403);
+    $lot_not_found = include_template('error.php', ['error' => 'The page is available only to unauthorized users!']);
+    print($lot_not_found);
+    exit();
+}
 
 $signup_page_title = 'YetiCave - Регистрация нового аккаунта';
 
@@ -33,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = validatePostData($form_fields, $fields_validation_rules);
     $error_email = validateIsEmailExist($link, $form_fields['email']);
 
-    if ($error_email) {
+    if (!isset($errors['email']) && $error_email) {
         $errors['email'] = $error_email;
     }
 
@@ -56,6 +63,7 @@ SQL;
 
         if ($new_user_result) {
             header("Location: login.php");
+            exit();
         }
     }
 } else {

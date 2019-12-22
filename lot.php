@@ -29,7 +29,8 @@ SQL;
     $lot_page_content = include_template('lot.php', [
         'categories' => $categories,
         'lot' => $lot_data,
-        'bets' => $lot_bets_data
+        'bets' => $lot_bets_data,
+        'is_auth' => $is_auth
     ]);
     print(getLayout($lot_name, $lot_page_content, $is_auth, $user_name, $categories));
 } else {

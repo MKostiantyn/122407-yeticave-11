@@ -4,8 +4,8 @@ require_once('categories.php');
 
 $validation_rules = [
     'required' => [
-        'validate' => function(string $var) : bool {
-            return !empty($var);
+        'validate' => function($var) : bool {
+            return !!$var || !empty($var);
         },
         'message' => 'Field is required!'
     ],
