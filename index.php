@@ -6,7 +6,7 @@ require_once('data.php');
 require_once('categories.php');
 
 $lots_query = <<<SQL
-    SELECT l.id AS lot_id, l.name AS lot_name, l.date_end AS date_end, price_default, image_url, c.name AS category_name
+    SELECT l.id AS id, l.name AS name, l.date_end AS date_end, price_default, image_url, c.name AS category_name
     FROM lots l
     JOIN categories c ON l.category_id = c.id
     WHERE l.date_end > CURRENT_TIMESTAMP ORDER BY l.date_create DESC

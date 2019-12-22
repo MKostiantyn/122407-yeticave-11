@@ -8,7 +8,6 @@ VALUES
     (N'Инструменты', 'tools'),
     (N'Разное', 'other');
 
-
 INSERT INTO users
     (date_registration, email, name, password, contacts)
 VALUES

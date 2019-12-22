@@ -44,3 +44,4 @@ CREATE TABLE users(
 CREATE UNIQUE INDEX name_index ON categories(code);
 CREATE UNIQUE INDEX code_index ON categories(code);
 CREATE UNIQUE INDEX email_index ON users(email);
+CREATE FULLTEXT INDEX lot_ft_index ON lots(name, description);
