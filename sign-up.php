@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (count($errors)) {
         $signup_page_data_content = include_template('sign-up.php', [
-            'categories' => $categories,
             'errors' => $errors
         ]);
     } else {
@@ -67,9 +66,7 @@ SQL;
         }
     }
 } else {
-    $signup_page_data_content = include_template('sign-up.php', [
-        'categories' => $categories
-    ]);
+    $signup_page_data_content = include_template('sign-up.php');
 }
 
 print(getLayout($signup_page_title, $signup_page_data_content, $is_auth, $user_name, $categories));
