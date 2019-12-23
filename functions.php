@@ -10,7 +10,17 @@ function runQuery(mysqli $link, string $sql, $params = array()) {
             errorQueryHandler($link);
             die();
         }
-        return mysqli_stmt_get_result($stmt);
+
+        if ($stmt_result = mysqli_stmt_get_result($stmt)) {
+            return $stmt_result;
+        }
+
+        if (mysqli_error($link)) {
+            errorQueryHandler($link);
+            die();
+        }
+
+        return true;
     }
 
     $result = mysqli_query($link, $sql);
@@ -103,7 +113,7 @@ function getLayout(string $title, string $content, bool $auth_status, string $us
     ]);
 }
 function getPostValue(string $name) : string {
-    return $_POST[$name] ?? '';
+    return $name && isset($_POST[$name]) ? $_POST[$name] : '';
 }
 function validatePostData(array $fields, array $rules) : array {
     $errors = [];

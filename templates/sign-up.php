@@ -1,5 +1,5 @@
 <form
-    class="form container<?= $errors && count($errors) ? '  form--invalid' : ''; ?>"
+    class="form container<?= isset($errors) && count($errors) ? '  form--invalid' : ''; ?>"
     action="/sign-up.php"
     method="post"
     autocomplete="off"
